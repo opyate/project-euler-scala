@@ -1,0 +1,2 @@
+Do not extend Application. Use 'App' instead for better performance.
+Application isn't optimised by the JC
