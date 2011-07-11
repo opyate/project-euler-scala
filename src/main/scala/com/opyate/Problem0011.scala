@@ -2,6 +2,7 @@ package com.opyate
 
 import tools.Timer
 import Timer._
+import scala.math.sqrt
 
 /**
  * What is the greatest product of 4 adjacent numbers in any direction
@@ -31,22 +32,99 @@ object Problem0011 extends App {
 04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36
 20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
-01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"""
-    .split('\n').flatMap(_.split(' ')).map(_.toInt).toList
+01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48""".split('\n').flatMap(_.split(' ')).map(_.toInt).toList
+
+  // the dimensions of this square grid of data
+  val dimension = sqrt(input.size).toInt
+
+  // the puzzle asks for 4 adjacent numbers
+  val adj = 4
 
   def answer = {
-    // build up a set of Tuple4 combinations of numbers
-    var combos = scala.collection.immutable.HashSet[Tuple4[Int,Int,Int,Int]]()
+    // build up a set of lists where each list contains 'adj' elements
+    var combos = scala.collection.immutable.HashSet[List[Int]]()
 
     // for each number, grab the:
     // horizontal to the right
     // the vertical to the bottom
-    // and the diagonal to the bottom right
+    // and the diagonal to the bottom right and left
     // No need to go left and up, since this would be covered
-    combos += for {
-      val i <- (0 until input.size + 1)
 
-    } yield Tuple4(input(i), input(i+1), input(i+2), input(i+3)) // etc
+    // 340 combinations of 4 horizontal numbers:
+    val horlist: List[List[Int]] = input.sliding(dimension, dimension).toList
+    for {
+      val subsublist <- horlist
+      val i <- (0 to subsublist.size)
+    } yield {
+      if (i+adj-1 < subsublist.size) { // not <=, because 400 will be out of bounds.
+        combos += List(subsublist(i), subsublist(i+1), subsublist(i+2), subsublist(i+3))
+      }
+    }
+
+    // 340 combinations of 4 vertical numbers
+    val vertlist = (0 until dimension).map(i => horlist.map(x => x(i)))
+    for {
+      val subsublist <- vertlist
+      val i <- (0 to subsublist.size)
+    } yield {
+      if (i+adj-1 < subsublist.size) { // not <=, because 400 will be out of bounds.
+        combos += List(subsublist(i), subsublist(i+1), subsublist(i+2), subsublist(i+3))
+      }
+    }
+
+    // p = (n-x+1)^2
+    //   = (dimension - adj + 1) ^ 2
+    //   = (20 - 4 + 1) ^ 2
+    //   = (17) ^ 2
+    //   = 289
+    // thus, 289 combinations of right-diagonals
+    // and 289 combinations of left diagonals
+    // thus 578 extra combinations.s
+
+    def sq(i: Int) = i*i
+
+    (0 to dimension * dimension).map(c1 => {
+
+      // Right diagonals:
+      // exclude points which fall in the dead zone, i.e.
+      // where a diagonal of length 'adj' originating in c1 goes over the border
+      if (!(c1 % 20 > dimension - adj || c1 > (dimension * (dimension - adj+1)) - adj)) {
+
+        val c2: Int = c1 + dimension + 1
+        val c3: Int = c2 + dimension + 1
+        val c4: Int = c3 + dimension + 1
+        val l = List(
+            input(c1),
+            input(c2),
+            input(c3),
+            input(c4))
+        //println("(%s,%s,%s,%s): %s".format(c1, c2, c3, c4, l))
+        combos += l
+      }
+
+      // Left diagonals:
+      if (!(c1 % 20 < adj-1 || c1 > (dimension * (dimension - adj+1)))) {
+
+        val c2: Int = c1 + dimension - 1
+        val c3: Int = c2 + dimension - 1
+        val c4: Int = c3 + dimension - 1
+        val l = List(
+            input(c1),
+            input(c2),
+            input(c3),
+            input(c4))
+        //println("(%s,%s,%s,%s): %s".format(c1, c2, c3, c4, l))
+        combos += l
+      }
+    })
+
+    //println(combos)
+    //combos.size
+
+    // laslty, find the largest product
+    val x: List[Int] = combos.maxBy(l => l.product)
+    println(x)
+    x.product
   }
 
   go
