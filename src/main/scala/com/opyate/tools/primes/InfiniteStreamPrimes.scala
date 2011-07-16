@@ -8,11 +8,14 @@ package com.opyate.tools.primes
 
 object InfiniteStreamPrimes {
 
-  val primes = 2 #:: sieve(3)
+  private val primes = 2 #:: sieve_eratosthenes(3)
 
-  def sieve(n: Int): Stream[Int] =
-    if (primes.takeWhile(p => p * p <= n).exists(n % _ == 0)) sieve(n + 2)
-    else n #:: sieve(n + 2)
+  /**
+   * TODO implement sieve of Atkins
+   */
+  private def sieve_eratosthenes(n: Int): Stream[Int] =
+    if (primes.takeWhile(p => p * p <= n).exists(n % _ == 0)) sieve_eratosthenes(n + 2)
+    else n #:: sieve_eratosthenes(n + 2)
 
   def getPrimes(maxNum: Int) = primes.takeWhile(_ < maxNum)
 }

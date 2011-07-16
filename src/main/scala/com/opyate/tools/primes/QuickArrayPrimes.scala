@@ -1,14 +1,21 @@
-package com.opyate.tools
+package com.opyate.tools.primes
 
 
 
 /**
+ * Get the bufsize-th prime number.
+ *
  * http://stackoverflow.com/questions/2427759/project-euler-7-scala-problem/2430292#2430292
+ *
+ * val num = 10001
+    val t0 = System.nanoTime
+    val p = (new QuickArrayPrimes(num)).lastPrime
+    val t1 = System.nanoTime
+    (p , (t1-t0)*1e-9)
  *
  * @author Juan Uys
  */
-
-class Primes(bufsize: Int) {
+class QuickArrayPrimes(bufsize: Int) {
   var n = 1
   val pbuf = new Array[Int](bufsize max 1)
   pbuf(0) = 2
@@ -37,11 +44,3 @@ class Primes(bufsize: Int) {
   }
   def lastPrime = { if (n<bufsize) fillBuf ; pbuf(pbuf.length-1) }
 }
-//object Primes {
-//  def timedGet(num: Int) = {
-//    val t0 = System.nanoTime
-//    val p = (new Primes(num)).lastPrime
-//    val t1 = System.nanoTime
-//    (p , (t1-t0)*1e-9)
-//  }
-//}

@@ -1,16 +1,13 @@
-package com.opyate
+package com.opyate.projecteuler._0000to0050
 
-import com.opyate.tools.Timer._
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Suite, FlatSpec}
 
-/**
- * Find the greatest product of five consecutive digits in the 1000-digit number.
- *
- * @author Juan Uys
- */
+class Problem0008Test extends Suite with ShouldMatchers {
 
-object Problem0008 extends App {
-
-  val n = """73167176531330624919225119674426574742355349194934
+  def test {
+    Problem0008.answer(Some(
+    """73167176531330624919225119674426574742355349194934
 96983520312774506326239578318016984801869478851843
 85861560789112949495459501737958331952853208805511
 12540698747158523863050715693290963295227443043557
@@ -29,15 +26,7 @@ object Problem0008 extends App {
 07198403850962455444362981230987879927244284909188
 84580156166097919133875499200524063689912560717606
 05886116467109405077541002256983155200055935729725
-71636269561882670428252483600823257530420752963450""".replaceAll("\n", "")
-
-// answer
-
-  def answer = (for (c <- n)
-    yield c.toString.toInt).sliding(5,1).toList.flatMap{vec =>
-      {List(vec.foldLeft(1)(_*_))}}.sortWith(_>_).head
-
-  go
-  println(answer)
-  stop
+71636269561882670428252483600823257530420752963450""")
+    ) should be (40824)
+  }
 }
